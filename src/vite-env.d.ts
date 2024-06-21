@@ -1,10 +1,9 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-	readonly VITE_BOTPRESS_TOKEN: string;
-	readonly VITE_BOTPRESS_BOT_ID: string;
-	readonly VITE_BOTPRESS_WORKSPACE_ID: string;
-	readonly VITE_BOTPRESS_BOT_ID_AS_USER: string;
+	readonly VITE_OPENAI_API: string;
+	readonly VITE_SUPABASE_URL: string;
+	readonly VITE_SUPABASE_KEY: string;
 }
 
 interface ImportMeta {
