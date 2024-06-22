@@ -1,10 +1,10 @@
 import defaultAvatarImg from '../assets/default-avatar.png';
 import differenceInDays from 'date-fns/differenceInDays';
-import { Conversation } from '@botpress/client';
 import { getCountLabel } from '../utils';
+import { ConversationWithMessages } from '../pages/Dashboard';
 
 interface ConversationItemProps {
-	conversation: Conversation;
+	conversation: ConversationWithMessages;
 	userName: string;
 	isSelected?: boolean;
 }
@@ -16,9 +16,8 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({
 }) => {
 	return (
 		<div
-			className={`flex items-center px-5 py-4 ${
-				isSelected ? 'bg-zinc-200' : ''
-			}`}
+			className={`flex items-center px-5 py-4 ${isSelected ? 'bg-zinc-200' : ''
+				}`}
 		>
 			{/* Placeholder rounded profile pic */}
 			<img
@@ -32,7 +31,7 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({
 					{getCountLabel(
 						differenceInDays(
 							new Date(),
-							new Date(conversation.updatedAt)
+							new Date(conversation.created_at)
 						),
 						'day ago',
 						'days ago',
@@ -43,13 +42,12 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({
 			</p>
 			{/* Badge with channel name */}
 			<span
-				className={`ml-auto px-2 py-1 rounded-full ${
-					conversation.integration === 'whatsapp'
-						? 'bg-green-500'
-						: conversation.integration === 'telegram'
+				className={`ml-auto px-2 py-1 rounded-full ${conversation.integration === 'whatsapp'
+					? 'bg-green-500'
+					: conversation.integration === 'telegram'
 						? 'bg-blue-500'
 						: 'bg-gray-500'
-				} text-white text-xs`}
+					} text-white text-xs`}
 			>
 				{conversation.integration}
 			</span>

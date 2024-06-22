@@ -1,7 +1,7 @@
 import toast from 'react-hot-toast';
 import { AbortError } from 'p-retry';
 import { Conversation, Message } from '@botpress/client';
-import { ConversationDetails } from '../components/ConversationDetails';
+import { ConversationDetails, OpenAIMessage } from '../components/ConversationDetails';
 import { ConversationList } from '../components/ConversationList';
 import { Header } from '../components/interface/Header';
 import { listConversationsWithMessages } from '../hooks/clientFunctions';
@@ -18,10 +18,10 @@ import { createClient } from '@supabase/supabase-js';
 import { OpenAI } from 'openai';
 
 export interface ConversationWithMessages extends Conversation {
-	messages: Message[];
 	name: string;
 	number: string;
 	threadID: string;
+	created_at: string;
 }
 // export interface ConversationWithMessages extends Conversation {
 // 	messages: Message[];
@@ -45,8 +45,8 @@ const loadConvs = async () => {
 
 const fetchMessagesFromOpenAI = async (threadID: string) => {
 	const threadMessages = await openai.beta.threads.messages.list(threadID);
-	console.log(threadMessages)
-	return threadMessages.data.map((i) => (i.content[0]?.text?.value));
+
+	return threadMessages.data;
 };
 
 
@@ -55,22 +55,13 @@ export const Dashboard = () => {
 		useState<boolean>(true);
 
 	const [selectedConversation, setSelectedConversation] =
-		useState<ConversationWithMessages>();
+		useState<OpenAIMessage[]>();
 
 	const [conversationList, setConversationList] = useState<
-		ConversationWithMessages[]
+		OpenAIMessage[]
 	>([]);
 	const [nextConversationsToken, setNextConversationsToken] =
 		useState<string>();
-
-	const { botpressClient, createClient, deleteClient } = useBotpressClient();
-
-	function clearsCredentialsAndClient() {
-		deleteClient();
-
-		clearStoredCredentials();
-		// window.location.reload();
-	}
 
 	// useEffect(() => {
 	// 	if (!botpressClient) {
@@ -186,21 +177,24 @@ export const Dashboard = () => {
 				const conversations = await loadConvs();
 
 
-				const messages = await fetchMessagesFromOpenAI(conversations[0].threadID);
-				console.log("MSDS", messages)
-
-
-				// setConversationList([{ ...threadID, messages }]);
+				// const messages = await fetchMessagesFromOpenAI(conversations[0].threadID);
+				// console.log("MSDS", messages)
+				setConversationList(conversations);
 
 			} catch (error: any) {
-				// toast.error("Couldn't load conversations");
+				toast.error("Couldn't load conversations");
 			} finally {
-				// setIsLoadingConversations(false);
+				setIsLoadingConversations(false);
 			}
 
 		})();
 	}, [supabase]);
 
+	const handleClickConversation = async (threadId: string) => {
+		const messages = await fetchMessagesFromOpenAI(threadId)
+		const x = messages.map(message => ({ id: message.id, createdAt: message.created_at, role: message.role, content: message.content[0].text.value }))
+		setSelectedConversation(x)
+	}
 
 	/*
 	async function loadOlderConversations() {
@@ -239,78 +233,73 @@ export const Dashboard = () => {
 		}
 	}
 */
-	return <>Hello Open AI</>
 
-	// return botpressClient ? (
-	// 	<div className="flex flex-col h-screen overflow-hidden bg-zinc-100 text-gray-800">
-	// 		{/* HEADER */}
-	// 		<Header
-	// 			handleLogout={clearsCredentialsAndClient}
-	// 			botName="Test"
-	// 			// botName={botInfo.name}
-	// 			className="flex-shrink-0 h-14"
-	// 		/>
-	// 		{/* CONVERSATIONS */}
-	// 		<div className="mx-2 mb-2 gap-2 flex overflow-hidden h-full">
-	// 			<div className="flex flex-col gap-2 w-1/4">
-	// 				{/* CONVERSATION LIST */}
-	// 				<aside className="w-full flex-col flex flex-1 rounded-md border border-zinc-200 overflow-auto">
-	// 					<ConversationList
-	// 						conversations={conversationList}
-	// 						onSelectConversation={(
-	// 							conversation: ConversationWithMessages
-	// 						) => setSelectedConversation(conversation)}
-	// 						selectedConversationId={selectedConversation?.id}
-	// 						loadOlderConversations={loadOlderConversations}
-	// 						hasMoreConversations={
-	// 							nextConversationsToken ? true : false
-	// 						}
-	// 						className="bg-white"
-	// 					/>
+	return <>
+		<div className="flex flex-col h-screen overflow-hidden bg-zinc-100 text-gray-800">
+			{/* HEADER */}
+			<Header
+				handleLogout={() => { }}
+				botName="Test"
+				// botName={botInfo.name}
+				className="flex-shrink-0 h-14"
+			/>
+			{/* CONVERSATIONS */}
+			<div className="mx-2 mb-2 gap-2 flex overflow-hidden h-full">
+				<div className="flex flex-col gap-2 w-1/4">
+					{/* CONVERSATION LIST */}
+					<aside className="w-full flex-col flex flex-1 rounded-md border border-zinc-200 overflow-auto">
+						<ConversationList
+							conversations={conversationList}
+							onSelectConversation={handleClickConversation}
+							selectedConversationId={selectedConversation?.id}
+							loadOlderConversations={async () => { }}
+							hasMoreConversations={
+								nextConversationsToken ? true : false
+							}
+							className="bg-white"
+						/>
 
-	// 					{isLoadingConversations && (
-	// 						<div className="self-center bg-zinc-200 p-6 text-lg font-medium rounded-md my-auto flex flex-col items-center gap-5">
-	// 							<LoadingAnimation label="Loading messages..." />
-	// 							Loading conversations...
-	// 						</div>
-	// 					)}
-	// 				</aside>
-	// 			</div>
+						{isLoadingConversations && (
+							<div className="self-center bg-zinc-200 p-6 text-lg font-medium rounded-md my-auto flex flex-col items-center gap-5">
+								<LoadingAnimation label="Loading messages..." />
+								Loading conversations...
+							</div>
+						)}
+					</aside>
+				</div>
 
-	// 			{/* CONVERSATION DETAILS */}
-	// 			<div className="flex w-3/4 h-full">
-	// 				{selectedConversation ? (
-	// 					<ConversationDetails
-	// 						conversation={selectedConversation}
-	// 						messagesInfo={{
-	// 							list: selectedConversation.messages,
-	// 							nextToken:
-	// 								selectedConversation.nextMessagesToken,
-	// 						}}
-	// 						className="w-full gap-1"
-	// 						onDeleteConversation={(conversationId: string) => {
-	// 							setSelectedConversation(undefined);
-	// 							setConversationList((prev) =>
-	// 								prev.filter(
-	// 									(conversation) =>
-	// 										conversation.id !== conversationId
-	// 								)
-	// 							);
-	// 						}}
-	// 					/>
-	// 				) : (
-	// 					<div className="bg-zinc-200 p-5 text-lg font-medium rounded-md my-auto mx-auto">
-	// 						Select a conversation to see details
-	// 					</div>
-	// 				)}
-	// 			</div>
-	// 		</div>
-	// 		{/* <div className="m-2">
-	// 			<Disclaimer />
-	// 		</div> */}
-	// 	</div>
-	// ) : (
-	// 	<LoginPage clearsCredentialsAndClient={clearsCredentialsAndClient} />
-	// );
+				{/* CONVERSATION DETAILS */}
+				<div className="flex w-3/4 h-full">
+					{selectedConversation ? (
+						<ConversationDetails
+							conversation={selectedConversation}
+							// messagesInfo={{
+							// 	list: selectedConversation.messages,
+							// 	nextToken:
+							// 		selectedConversation.nextMessagesToken,
+							// }}
+							className="w-full gap-1"
+							onDeleteConversation={(conversationId: string) => {
+								setSelectedConversation(undefined);
+								setConversationList((prev) =>
+									prev.filter(
+										(conversation) =>
+											conversation.id !== conversationId
+									)
+								);
+							}}
+						/>
+					) : (
+						<div className="bg-zinc-200 p-5 text-lg font-medium rounded-md my-auto mx-auto">
+							Select a conversation to see details
+						</div>
+					)}
+				</div>
+			</div>
+			{/* <div className="m-2">
+				<Disclaimer />
+			</div> */}
+		</div>
+	</>
 
 };

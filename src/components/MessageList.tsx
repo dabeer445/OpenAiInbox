@@ -3,9 +3,10 @@ import { isDefinedAndHasItems } from '../utils';
 import { Message } from '@botpress/client/dist/gen';
 import { MessageItem } from './MessageItem';
 import { useEffect, useState } from 'react';
+import { OpenAIMessage } from './ConversationDetails';
 
 interface MessageListProps {
-	messages: Message[];
+	messages: OpenAIMessage[];
 	loadOlderMessages: () => void;
 	handleScrollToBottom: () => void;
 	bottomRef: React.RefObject<HTMLDivElement>;
@@ -21,13 +22,14 @@ export const MessageList = ({
 }: MessageListProps) => {
 	const [messageList, setMessageList] = useState<Message[]>([]);
 
-	useEffect(() => {
-		setMessageList(messages);
-	}, [messages]);
+	console.log(messages)
+	// useEffect(() => {
+	// 	setMessageList(messages);
+	// }, [messages]);
 
-	useEffect(() => {
-		handleScrollToBottom();
-	}, []);
+	// useEffect(() => {
+	// 	handleScrollToBottom();
+	// }, []);
 
 	return (
 		<InfiniteScroll
@@ -45,9 +47,9 @@ export const MessageList = ({
 			isReverse={true}
 			useWindow={true}
 			className="pr-2"
-			// onLoadedData={() => {
-			// 	handleScrollToBottom();
-			// }}
+		// onLoadedData={() => {
+		// 	handleScrollToBottom();
+		// }}
 		>
 			<div className="flex-grow flex flex-col gap-1 pr-2">
 				{isDefinedAndHasItems(messages) ? (
@@ -57,7 +59,7 @@ export const MessageList = ({
 								Start of the conversation
 							</div>
 						)}
-						{messageList
+						{messages
 							.sort(
 								(a, b) =>
 									new Date(a.createdAt).getTime() -
@@ -67,12 +69,12 @@ export const MessageList = ({
 								<MessageItem
 									message={message}
 									key={index}
-									className={
-										list[index - 1]?.direction !==
-										message.direction
-											? 'mt-2'
-											: ''
-									}
+								// className={
+								// 	list[index - 1]?.direction !==
+								// 		message.direction
+								// 		? 'mt-2'
+								// 		: ''
+								// }
 								/>
 							))}
 						<div ref={bottomRef} />

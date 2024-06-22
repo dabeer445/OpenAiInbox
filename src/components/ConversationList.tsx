@@ -6,7 +6,7 @@ import { useRef } from 'react';
 
 interface ConversationListProps {
 	conversations: ConversationWithMessages[];
-	onSelectConversation: (conversation: ConversationWithMessages) => void;
+	onSelectConversation: (threadId: string) => void;
 	loadOlderConversations: () => Promise<void>;
 	hasMoreConversations?: boolean;
 	selectedConversationId?: string;
@@ -22,7 +22,6 @@ export const ConversationList = ({
 	className,
 }: ConversationListProps) => {
 	const observerTarget = useRef<HTMLDivElement>(null);
-
 	return (
 		<InfiniteScroll
 			pageStart={0}
@@ -66,19 +65,19 @@ export const ConversationList = ({
 
 						// sorts the conversations by the last update instead
 						return (
-							new Date(b.updatedAt).getTime() -
-							new Date(a.updatedAt).getTime()
+							new Date(b.created_at).getTime() -
+							new Date(a.created_at).getTime()
 						);
 					})
 					.map((conversation) => (
 						<button
 							className="w-full"
-							onClick={() => onSelectConversation(conversation)}
+							onClick={() => onSelectConversation(conversation.threadID)}
 							key={conversation.id}
 						>
 							<ConversationItem
 								conversation={conversation}
-								userName={'Chatbot User'}
+								userName={conversation.name}
 								isSelected={
 									conversation.id === selectedConversationId
 								}

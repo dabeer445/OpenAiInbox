@@ -4,13 +4,15 @@ import {
 	QuickReplyPayloadBP,
 	TextPayloadBP,
 } from '../types/botpress';
+import { OpenAIMessage } from './ConversationDetails';
 
 interface MessageItemProps {
-	message: Message;
+	message: OpenAIMessage;
 	className?: string;
 }
 
 export const MessageItem = ({ message, className }: MessageItemProps) => {
+	console.log(message)
 	const isTextPayload = (payload: any): payload is TextPayloadBP => {
 		return (
 			(payload as TextPayloadBP).text !== undefined &&
@@ -30,20 +32,19 @@ export const MessageItem = ({ message, className }: MessageItemProps) => {
 
 	return (
 		<div
-			className={`flex flex-col ${
-				message.direction === 'incoming'
-					? 'self-start items-start pr-5'
-					: 'self-end items-end pl-5'
-			} ${className}`}
+			className={`flex flex-col ${message.role === 'assistant'
+				? 'self-start items-start pr-5'
+				: 'self-end items-end pl-5'
+				} ${className}`}
 		>
 			<div
-				className={`px-3 py-2 rounded-2xl ${
-					message.direction === 'incoming'
-						? 'bg-blue-500 text-white'
-						: 'bg-gray-200'
-				}`}
+				className={`px-3 py-2 rounded-2xl ${message.role === 'assistant'
+					? 'bg-blue-500 text-white'
+					: 'bg-gray-200'
+					}`}
 			>
-				{isTextPayload(message.payload) ? (
+				{message.content}
+				{/* {isTextPayload(message.payload) ? (
 					<span className="whitespace-pre-line">
 						{message.payload.text}
 					</span>
@@ -62,11 +63,13 @@ export const MessageItem = ({ message, className }: MessageItemProps) => {
 							))}
 						</ul>
 					</>
-				) : (
+				) 
+				
+				: (
 					<span className="whitespace-pre-line">
 						Could not show content
 					</span>
-				)}
+				)} */}
 			</div>
 			{/* <ReactMessageRenderer
 				content={{

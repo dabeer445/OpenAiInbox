@@ -9,11 +9,18 @@ import { MessageList } from './MessageList';
 import { useBotpressClient } from '../hooks/botpressClient';
 import { useEffect, useRef, useState } from 'react';
 
+export interface OpenAIMessage {
+	id: string,
+	role: string,
+	content: string,
+	createdAt: number
+}
+
 interface ConversationDetailsProps {
-	conversation: Conversation;
+	conversation: OpenAIMessage[];
 	onDeleteConversation: (conversationId: string) => void;
 	messagesInfo?: {
-		list: Message[];
+		list: OpenAIMessage[];
 		nextToken?: string;
 	};
 	className?: string;
@@ -25,8 +32,10 @@ export const ConversationDetails = ({
 	messagesInfo,
 	className,
 }: ConversationDetailsProps) => {
+
+	console.log(conversation)
 	const [messages, setMessages] = useState<Message[]>([]);
-	const [isLoadingMessages, setIsLoadingMessages] = useState(true);
+	const [isLoadingMessages, setIsLoadingMessages] = useState(false);
 	const [nextMessagesToken, setNextMessagesToken] = useState<string>();
 
 	const [users, setUsers] = useState<User[]>([]);
@@ -227,7 +236,7 @@ export const ConversationDetails = ({
 					<div className="flex flex-col h-full p-4">
 						<div className="overflow-auto h-full">
 							<MessageList
-								messages={messages}
+								messages={conversation}
 								loadOlderMessages={loadOlderMessages}
 								hasMoreMessages={
 									nextMessagesToken ? true : false
@@ -236,7 +245,7 @@ export const ConversationDetails = ({
 								bottomRef={messageListEndRef}
 							/>
 						</div>
-						<MessageInput
+						{/* <MessageInput
 							conversationId={conversation.id}
 							addMessageToList={(message: Message) => {
 								setMessages((prevMessages) => [
@@ -246,12 +255,12 @@ export const ConversationDetails = ({
 							}}
 							botpressBotIdAsAUser={botpressBotIdAsAUser}
 							handleScrollToBottom={handleScrollToBottom}
-						/>
+						/> */}
 					</div>
 				)}
 			</div>
 
-			<div className="w-1/3 default-border overflow-y-auto bg-white">
+			{/* <div className="w-1/3 default-border overflow-y-auto bg-white">
 				{isLoadingUsers ? (
 					<div className="self-center bg-zinc-200 p-6 text-lg font-medium rounded-md my-auto flex flex-col items-center gap-5">
 						<LoadingAnimation label="Loading messages..." />
@@ -266,7 +275,7 @@ export const ConversationDetails = ({
 						className="flex"
 					/>
 				)}
-			</div>
+			</div> */}
 		</div>
 	);
 };
