@@ -10,6 +10,7 @@ import { useBotpressClient } from '../hooks/botpressClient';
 import { useEffect, useRef, useState } from 'react';
 
 export interface OpenAIMessage {
+	threadId: string,
 	id: string,
 	role: string,
 	content: string,
@@ -24,6 +25,7 @@ interface ConversationDetailsProps {
 		nextToken?: string;
 	};
 	className?: string;
+	isLoading?: boolean
 }
 
 export const ConversationDetails = ({
@@ -31,11 +33,10 @@ export const ConversationDetails = ({
 	onDeleteConversation,
 	messagesInfo,
 	className,
+	isLoading
 }: ConversationDetailsProps) => {
-
-	console.log(conversation)
 	const [messages, setMessages] = useState<Message[]>([]);
-	const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+
 	const [nextMessagesToken, setNextMessagesToken] = useState<string>();
 
 	const [users, setUsers] = useState<User[]>([]);
@@ -106,66 +107,6 @@ export const ConversationDetails = ({
 	}
 
 	useEffect(() => {
-		setMessages([]); // reset messages
-		setUsers([]); // reset users
-
-		if (!botpressClient) {
-			return;
-		}
-
-		(async () => {
-			setIsLoadingMessages(true);
-
-			const run = async () => {
-				try {
-					let messageList: Message[] = [];
-					let token: string | undefined;
-
-					// if the conversation already has already been given the messages data, use it
-					if (messagesInfo?.list?.length) {
-						messageList = messagesInfo.list;
-						token = messagesInfo?.nextToken;
-					} else {
-						// otherwise, get the messages from the botpress api
-						const getMessages = await botpressClient.listMessages({
-							conversationId: conversation.id,
-						});
-
-						messageList = getMessages.messages;
-						token = getMessages.meta.nextToken;
-					}
-
-					setMessages(messageList);
-					setNextMessagesToken(token);
-				} catch (error: any) {
-					console.log(JSON.stringify(error));
-
-					toast.error("Couldn't load messages");
-
-					if (error.code === 429) {
-						toast(
-							'You have reached the limit of requests to the Botpress API... Please try again later'
-						);
-
-						throw new AbortError('API limit reached');
-					}
-				}
-			};
-
-			await pRetry(run, {
-				onFailedAttempt: (error) => {
-					if (error instanceof AbortError) {
-						console.log(error.message);
-					}
-				},
-				retries: 5,
-			});
-
-			setIsLoadingMessages(false);
-		})();
-	}, [conversation]);
-
-	useEffect(() => {
 		// sets the botpress bot id as a user by searching all messages
 		messages.forEach((message) => {
 			if (message.direction === 'outgoing') {
@@ -227,7 +168,7 @@ export const ConversationDetails = ({
 	return (
 		<div className={`flex ${className}`}>
 			<div className="w-2/3 flex flex-col default-border bg-white">
-				{isLoadingMessages ? (
+				{isLoading ? (
 					<div className="self-center bg-zinc-200 p-6 text-lg font-medium rounded-md my-auto flex flex-col items-center gap-5">
 						<LoadingAnimation label="Loading messages..." />
 						Loading messages...

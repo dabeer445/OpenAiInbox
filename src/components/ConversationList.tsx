@@ -2,15 +2,15 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { ConversationItem } from './ConversationItem';
 import { ConversationWithMessages } from '../pages/Dashboard';
 import { LoadingAnimation } from './interface/Loading';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
 interface ConversationListProps {
 	conversations: ConversationWithMessages[];
 	onSelectConversation: (threadId: string) => void;
 	loadOlderConversations: () => Promise<void>;
 	hasMoreConversations?: boolean;
-	selectedConversationId?: string;
 	className?: string;
+	selectedConversation?: string;
 }
 
 export const ConversationList = ({
@@ -18,9 +18,11 @@ export const ConversationList = ({
 	onSelectConversation,
 	loadOlderConversations,
 	hasMoreConversations,
-	selectedConversationId,
 	className,
+	selectedConversation
 }: ConversationListProps) => {
+
+
 	const observerTarget = useRef<HTMLDivElement>(null);
 	return (
 		<InfiniteScroll
@@ -47,23 +49,6 @@ export const ConversationList = ({
 				{conversations
 					// if the conversation had the messages data, they could be sorted by the last message
 					.sort((a, b) => {
-						// a.messages.sort(
-						// 	(a, b) =>
-						// 		new Date(b.createdAt).getTime() -
-						// 		new Date(a.createdAt).getTime()
-						// );
-						// b.messages.sort(
-						// 	(a, b) =>
-						// 		new Date(b.createdAt).getTime() -
-						// 		new Date(a.createdAt).getTime()
-						// );
-
-						// return (
-						// 	new Date(b.messages[0].createdAt).getTime() -
-						// 	new Date(a.messages[0].createdAt).getTime()
-						// );
-
-						// sorts the conversations by the last update instead
 						return (
 							new Date(b.created_at).getTime() -
 							new Date(a.created_at).getTime()
@@ -79,7 +64,7 @@ export const ConversationList = ({
 								conversation={conversation}
 								userName={conversation.name}
 								isSelected={
-									conversation.id === selectedConversationId
+									conversation.threadID === selectedConversation
 								}
 							/>
 						</button>
