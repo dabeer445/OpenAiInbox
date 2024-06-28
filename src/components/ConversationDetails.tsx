@@ -1,12 +1,6 @@
-import pRetry, { AbortError } from 'p-retry';
-import toast from 'react-hot-toast';
-import { Conversation, Message, User } from '@botpress/client';
-import { ConversationInfo } from './ConversationInfo';
-import { isDefinedAndHasItems } from '../utils';
+import { fetchMessagesFromOpenAI } from '../utils';
 import { LoadingAnimation } from './interface/Loading';
-import { MessageInput } from './MessageInput';
 import { MessageList } from './MessageList';
-import { useBotpressClient } from '../hooks/botpressClient';
 import { useEffect, useRef, useState } from 'react';
 
 export interface OpenAIMessage {
@@ -18,172 +12,73 @@ export interface OpenAIMessage {
 }
 
 interface ConversationDetailsProps {
-	conversation: OpenAIMessage[];
-	onDeleteConversation: (conversationId: string) => void;
-	messagesInfo?: {
-		list: OpenAIMessage[];
-		nextToken?: string;
-	};
+	threadId: string;
+	// onDeleteConversation: (conversationId: string) => void;
+	// messagesInfo?: {
+	// 	list: OpenAIMessage[];
+	// 	nextToken?: string;
+	// };
 	className?: string;
-	isLoading?: boolean
+	// isLoading?: boolean
 }
 
 export const ConversationDetails = ({
-	conversation,
-	onDeleteConversation,
-	messagesInfo,
+	threadId,
+	// onDeleteConversation,
+	// messagesInfo,
 	className,
-	isLoading
+	// isLoading
 }: ConversationDetailsProps) => {
-	const [messages, setMessages] = useState<Message[]>([]);
+	const [messages, setMessages] = useState<OpenAIMessage[]>([]);
 
-	const [nextMessagesToken, setNextMessagesToken] = useState<string>();
+	const [isLoadingMessages, setIsLoadingMessages] = useState(false)
 
-	const [users, setUsers] = useState<User[]>([]);
-	const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+	const containerRef = useRef<HTMLDivElement>(null);
 
-	const { botpressClient } = useBotpressClient();
-	const [botpressBotIdAsAUser, setBotpressBotIdAsAUser] = useState<string>();
-
-	const messageListEndRef = useRef<HTMLDivElement>(null);
-
-	function handleScrollToBottom() {
-		if (messageListEndRef.current) {
-			messageListEndRef.current.scrollIntoView({ behavior: 'smooth' });
-		} else {
-			console.debug('messageListEndRef.current is null');
-		}
-	}
-
-	async function loadOlderMessages() {
-		try {
-			if (!nextMessagesToken || !botpressClient) {
-				return;
-			}
-
-			const getMessages = await botpressClient.listMessages({
-				conversationId: conversation.id,
-				nextToken: nextMessagesToken,
-			});
-
-			setMessages((prevMessages) => [
-				...getMessages.messages,
-				...prevMessages,
-			]);
-
-			setNextMessagesToken(getMessages.meta.nextToken || undefined);
-		} catch (error: any) {
-			console.log(JSON.stringify(error));
-
-			toast.error("Couldn't load older messages");
-		}
-	}
-
-	async function handleDeleteConversation(conversationId: string) {
-		if (
-			confirm(
-				'Are you sure you want to delete this conversation?\nAll of its messages and users are gonna be deleted!'
-			)
-		) {
-			try {
-				const deleteConversation =
-					await botpressClient?.deleteConversation({
-						id: conversationId,
-					});
-
-				if (deleteConversation) {
-					toast.success(
-						'This conversation was deleted successfully!'
-					);
-
-					onDeleteConversation(conversationId);
-				}
-			} catch (error: any) {
-				console.log(JSON.stringify(error));
-
-				toast.error("Couldn't delete this conversation");
-			}
-		}
-	}
+	const [lastMessageId, setLastMessageId] = useState("")
+	const [getOlderMessagesFlag, setGetOlderMessagesFlag] = useState(false)
 
 	useEffect(() => {
-		// sets the botpress bot id as a user by searching all messages
-		messages.forEach((message) => {
-			if (message.direction === 'outgoing') {
-				setBotpressBotIdAsAUser(message.userId);
-			}
-		});
+		if (threadId.length) {
+			setIsLoadingMessages(true)
+			fetchMessagesFromOpenAI(threadId, lastMessageId).then(messages => {
+				setIsLoadingMessages(false)
+				if (messages.length) {
 
-		isDefinedAndHasItems(messages) &&
-			!isDefinedAndHasItems(users) &&
-			(async () => {
-				setIsLoadingUsers(true);
-
-				try {
-					// grabs all user ids from messages
-					const userIds = messages.reduce(
-						(acc: string[], message: Message) => {
-							// checks if the message has a userId and if it's not already in the array
-							if (
-								message.userId &&
-								!acc.includes(message.userId)
-							) {
-								acc.push(message.userId);
-							}
-
-							return acc;
-						},
-						[]
-					);
-
-					// gets all users from the user ids
-					userIds.forEach(async (userId, index) => {
-						try {
-							const showUserRequest =
-								await botpressClient?.getUser({
-									id: userId,
-								});
-
-							if (showUserRequest && showUserRequest.user) {
-								setUsers((prevUsers) => {
-									return [...prevUsers, showUserRequest.user];
-								});
-							}
-						} catch (error: any) {
-							console.log("Couldn't load user details");
-
-							console.log(JSON.stringify(error));
-						}
-					});
-				} catch (error) {
-					console.log(JSON.stringify(error));
-
-					toast.error("Couldn't load users' details");
+					const x = messages.map(message => ({ threadId, id: message.id, createdAt: message.created_at, role: message.role, content: message.content[0]?.text?.value }))
+					setLastMessageId(messages[0]?.id || "")
+					setMessages(prev => [...x, ...prev])
 				}
+			})
+		}
+	}, [threadId, getOlderMessagesFlag])
 
-				setIsLoadingUsers(false);
-			})();
-	}, [messages]);
+
+
+	const handleScroll = () => {
+		// const { scrollTop, clientHeight, scrollHeight } =
+		// 	containerRef.current || { scrollTop: 0, clientHeight: 0, scrollHeight: 0 }
+		// console.log(scrollTop)
+		// if (scrollTop === 40) {
+		// 	console.log("first")
+		// 	setMessages(prev => [...prev, ...prev])
+		// }
+	};
 
 	return (
 		<div className={`flex ${className}`}>
 			<div className="w-2/3 flex flex-col default-border bg-white">
-				{isLoading ? (
+				{isLoadingMessages ? (
 					<div className="self-center bg-zinc-200 p-6 text-lg font-medium rounded-md my-auto flex flex-col items-center gap-5">
 						<LoadingAnimation label="Loading messages..." />
 						Loading messages...
 					</div>
 				) : (
 					<div className="flex flex-col h-full p-4">
-						<div className="overflow-auto h-full">
+						<div onClick={() => { setGetOlderMessagesFlag(!getOlderMessagesFlag) }}>Load More</div>
+						<div ref={containerRef} onScroll={handleScroll} className="overflow-auto h-full">
 							<MessageList
-								messages={conversation}
-								loadOlderMessages={loadOlderMessages}
-								hasMoreMessages={
-									nextMessagesToken ? true : false
-								}
-								handleScrollToBottom={handleScrollToBottom}
-								bottomRef={messageListEndRef}
+								messages={messages}
 							/>
 						</div>
 						{/* <MessageInput

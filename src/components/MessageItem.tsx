@@ -12,7 +12,6 @@ interface MessageItemProps {
 }
 
 export const MessageItem = ({ message, className }: MessageItemProps) => {
-	console.log(message)
 	const isTextPayload = (payload: any): payload is TextPayloadBP => {
 		return (
 			(payload as TextPayloadBP).text !== undefined &&
@@ -79,7 +78,7 @@ export const MessageItem = ({ message, className }: MessageItemProps) => {
 				config={defaultMessageConfig}
 			/> */}
 			<span className="text-sm text-gray-400">
-				{new Date(message.createdAt).toLocaleString()}
+				{new Date(message.createdAt * 1000).toLocaleString()}
 			</span>
 		</div>
 	);
