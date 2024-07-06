@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import OpenAI from "openai";
-import React, { SetStateAction, createContext } from "react";
+import { createContext } from "react";
 
 export function getNumberEmoji(number: number) {
 	if (number <= 10) {
@@ -103,6 +103,8 @@ export interface dashboardContextType {
 	updateThreadId: (threadId: string) => void;
 }
 
+export const MESSAGES_PAGE_SIZE = 30
+
 export const DashboardContext = createContext<dashboardContextType | undefined>(undefined);
 
 
@@ -119,7 +121,7 @@ export const loadConvs = async (from: number, to: number) => {
 
 const openai = new OpenAI({ apiKey: import.meta.env.VITE_OPENAI_API, dangerouslyAllowBrowser: true });
 export const fetchMessagesFromOpenAI = async (threadID: string, before: string) => {
-	const threadMessages = await openai.beta.threads.messages.list(threadID, { limit: 30, order: "asc", after: before });
+	const threadMessages = await openai.beta.threads.messages.list(threadID, { limit: MESSAGES_PAGE_SIZE, order: "asc", after: before });
 	// console.log(threadMessages)
 	return threadMessages.data;
 };

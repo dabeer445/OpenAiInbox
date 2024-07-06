@@ -51,11 +51,11 @@ export function LoginPage({ clearsCredentialsAndClient }: LoginPageProps) {
 		<div className="flex flex-col h-screen">
 			<div className="flex flex-col gap-5 w-full max-w-xl mx-auto my-auto">
 				<form className="border-2 p-10 rounded-md shadow-sm flex flex-col gap-3">
-					<Disclaimer full />
+					{/* <Disclaimer full /> */}
 
 					<label htmlFor="" className="flex flex-col gap-1">
 						<span className="text-lg font-medium">
-							Bot Dashboard URL
+							Clerk Email
 						</span>
 						<input
 							type="text"
@@ -65,15 +65,15 @@ export function LoginPage({ clearsCredentialsAndClient }: LoginPageProps) {
 								setUserBotpressURL(event.target.value);
 							}}
 						/>
-						<span className="text-sm italic text-gray-600">
+						{/* <span className="text-sm italic text-gray-600">
 							Go to app.botpress.cloud, open your bot and copy the
 							link
-						</span>
+						</span> */}
 					</label>
 
 					<label htmlFor="" className="flex flex-col gap-1">
 						<span className="text-lg font-medium">
-							Personal Access Token
+							Password
 						</span>
 						<input
 							type="password"
@@ -83,10 +83,10 @@ export function LoginPage({ clearsCredentialsAndClient }: LoginPageProps) {
 								setUserBotpressToken(event.target.value);
 							}}
 						/>
-						<span className="text-sm italic text-gray-600">
+						{/* <span className="text-sm italic text-gray-600">
 							You can find this by clicking your avatar in the
 							dashboard. It will be saved only on your computer!
-						</span>
+						</span> */}
 					</label>
 
 					<button
@@ -100,7 +100,7 @@ export function LoginPage({ clearsCredentialsAndClient }: LoginPageProps) {
 						}
 					>
 						<span className="text-xl text-white font-medium">
-							Save
+							Continue
 						</span>
 					</button>
 				</form>

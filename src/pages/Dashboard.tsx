@@ -3,6 +3,7 @@ import { ConversationList } from '../components/ConversationList';
 import { Header } from '../components/interface/Header';
 import { useState } from 'react';
 import { DashboardContext } from '../utils';
+import { LoginPage } from '../components/LoginPage';
 
 
 // export interface ConversationWithMessages extends Conversation {
@@ -18,6 +19,8 @@ export const Dashboard = () => {
 
 
 	const [selectedThreadId, setSelectedThreadId] = useState("");
+
+	const [isLoggedIn, setIsLoggedIn] = useState(true)
 
 	// const updateThreadId = (threadId: string) => { setSelectedThreadId(threadId) }
 
@@ -41,7 +44,8 @@ export const Dashboard = () => {
 
 
 	return <>
-		<DashboardContext.Provider value={{
+
+		{isLoggedIn ? <DashboardContext.Provider value={{
 			selectedThreadId, updateThreadId(threadId) {
 				setSelectedThreadId(threadId)
 			},
@@ -58,20 +62,20 @@ export const Dashboard = () => {
 				<div className="mx-2 mb-2 gap-2 flex overflow-hidden h-full">
 					<div className="flex flex-col gap-2 w-1/4">
 						{/* CONVERSATION LIST */}
-						<aside className="w-full flex-col flex flex-1 rounded-md border border-zinc-200 overflow-auto">
-							<ConversationList
-							// conversations={conversationList}
-							// onSelectConversation={handleClickConversation}
-							// selectedConversation={selectedConversation[0]?.threadId}
-							// loadOlderConversations={async () => { }}
-							// hasMoreConversations={
-							// 	nextConversationsToken ? true : false
-							// }
-							// className="bg-white"
-							/>
+
+						<ConversationList
+						// conversations={conversationList}
+						// onSelectConversation={handleClickConversation}
+						// selectedConversation={selectedConversation[0]?.threadId}
+						// loadOlderConversations={async () => { }}
+						// hasMoreConversations={
+						// 	nextConversationsToken ? true : false
+						// }
+						// className="bg-white"
+						/>
 
 
-						</aside>
+
 					</div>
 
 					{/* CONVERSATION DETAILS */}
@@ -107,7 +111,6 @@ export const Dashboard = () => {
 				<Disclaimer />
 			</div> */}
 			</div>
-		</DashboardContext.Provider>
+		</DashboardContext.Provider> : <LoginPage clearsCredentialsAndClient={() => { }} />}
 	</>
-
 };

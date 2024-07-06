@@ -1,4 +1,5 @@
-import { fetchMessagesFromOpenAI } from '../utils';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { fetchMessagesFromOpenAI, MESSAGES_PAGE_SIZE } from '../utils';
 import { LoadingAnimation } from './interface/Loading';
 import { MessageList } from './MessageList';
 import { useEffect, useRef, useState } from 'react';
@@ -38,20 +39,48 @@ export const ConversationDetails = ({
 	const [lastMessageId, setLastMessageId] = useState("")
 	const [getOlderMessagesFlag, setGetOlderMessagesFlag] = useState(false)
 
+	const [hadMoreConvs, setHadMoreConvs] = useState(true)
+
+	const initialRender = useRef(true)
+
 	useEffect(() => {
+		initialRender.current = false
 		if (threadId.length) {
 			setIsLoadingMessages(true)
-			fetchMessagesFromOpenAI(threadId, lastMessageId).then(messages => {
+			fetchMessagesFromOpenAI(threadId, "").then(messages => {
 				setIsLoadingMessages(false)
 				if (messages.length) {
-
+					console.log(messages.length)
 					const x = messages.map(message => ({ threadId, id: message.id, createdAt: message.created_at, role: message.role, content: message.content[0]?.text?.value }))
+					console.log(messages[0]?.id)
 					setLastMessageId(messages[0]?.id || "")
-					setMessages(prev => [...x, ...prev])
+					setMessages([...x])
+					if (messages.length < MESSAGES_PAGE_SIZE) {
+						setHadMoreConvs(false)
+					}
+				} else {
+					setHadMoreConvs(false)
 				}
 			})
 		}
-	}, [threadId, getOlderMessagesFlag])
+	}, [threadId])
+
+	useEffect(() => {
+		if (threadId.length && lastMessageId.length) {
+			console.log(initialRender)
+			// setIsLoadingMessages(true)
+			fetchMessagesFromOpenAI(threadId, lastMessageId).then(messages => {
+				console.log(lastMessageId)
+				if (messages.length) {
+					const x = messages.map(message => ({ threadId, id: message.id, createdAt: message.created_at, role: message.role, content: message.content[0]?.text?.value }))
+					setLastMessageId(messages[0]?.id || "")
+					setMessages(prev => [...prev, ...x])
+				} else {
+					setHadMoreConvs(false)
+				}
+			})
+		}
+	}, [getOlderMessagesFlag])
 
 
 
@@ -75,11 +104,22 @@ export const ConversationDetails = ({
 					</div>
 				) : (
 					<div className="flex flex-col h-full p-4">
-						<div onClick={() => { setGetOlderMessagesFlag(!getOlderMessagesFlag) }}>Load More</div>
-						<div ref={containerRef} onScroll={handleScroll} className="overflow-auto h-full">
-							<MessageList
-								messages={messages}
-							/>
+						{/* <div onClick={() => { setGetOlderMessagesFlag(!getOlderMessagesFlag) }}>Load More</div> */}
+						<div id='scrollableDiv' ref={containerRef} className="overflow-auto h-full">
+
+							<InfiniteScroll dataLength={99999}
+								next={() => {
+									console.log("first")
+									setGetOlderMessagesFlag(!getOlderMessagesFlag)
+								}}
+								loader={<h4 className=''>Loading</h4>}
+								hasMore={hadMoreConvs}
+								scrollableTarget='scrollableDiv'>
+								<MessageList
+									messages={messages}
+								/>
+							</InfiniteScroll>
+
 						</div>
 						{/* <MessageInput
 							conversationId={conversation.id}

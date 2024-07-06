@@ -1,8 +1,8 @@
-import InfiniteScroll from 'react-infinite-scroller';
 import { ConversationItem } from './ConversationItem';
 import { LoadingAnimation } from './interface/Loading';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { DashboardContext, fetchMessagesFromOpenAI, loadConvs } from '../utils';
+import { DashboardContext, loadConvs } from '../utils';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 
 export interface ConversationType {
@@ -48,13 +48,13 @@ export const ConversationList = () => {
 			const count = data.count || 0
 			setDataLength(count)
 
-			// console.log(data.data.length + conversationList.length)
+			console.log(data.data.length + conversationList.length)
 			if (data.data.length + conversationList.length >= count) {
 				setHadMoreConvs(false)
 			}
 			setPage(prev => prev + 1)
 			setConversationList(prev => [...prev, ...data.data])
-		}).catch(e => console.log(e)).finally(() => {
+		}).catch(e => { }).finally(() => {
 			setIsLoadingConversations(false)
 		})
 	}, [loadMoreFlag])
@@ -66,43 +66,48 @@ export const ConversationList = () => {
 
 	const observerTarget = useRef<HTMLDivElement>(null);
 	return (
-		<>
+		<aside id='conversationListContainer' className="w-full flex-col flex flex-1 rounded-md border border-zinc-200 overflow-auto">
 
-			{
+
+
+			{/* {
 				hadMoreConvs && <div className='cursor-pointer' onClick={() => {
 					setLoadMoreFlag(!loadMoreFlag)
 				}}>
 					Load More
 				</div>
-			}
-			<div
-				className={`flex flex-col  items-center w-full divide-y-2 bg-white`}
-			>
-				{conversationList
-					// if the conversation had the messages data, they could be sorted by the last message
-					.sort((a, b) => {
-						return (
-							new Date(b.created_at).getTime() -
-							new Date(a.created_at).getTime()
-						);
-					})
-					.map((conversation) => (
-						<button
-							className="w-full"
-							onClick={() => { handleClickConversation(conversation.threadID) }}
-							key={conversation.id}
-						>
-							<ConversationItem
-								conversation={conversation}
-								userName={conversation.name}
-								isSelected={
-									conversation.threadID === selectedThreadId
-								}
-							/>
-						</button>
-					))}
-				<div ref={observerTarget} />
-			</div>
+			} */}
+			<InfiniteScroll dataLength={dataLength} next={() => { setLoadMoreFlag(!loadMoreFlag) }} loader={<h4>Loading</h4>} hasMore={hadMoreConvs} scrollableTarget='conversationListContainer' >
+				<div
+					className={`flex flex-col  items-center w-full divide-y-2 bg-white`}
+				>
+
+					{conversationList
+						// if the conversation had the messages data, they could be sorted by the last message
+						.sort((a, b) => {
+							return (
+								new Date(b.created_at).getTime() -
+								new Date(a.created_at).getTime()
+							);
+						})
+						.map((conversation) => (
+							<button
+								className="w-full"
+								onClick={() => { handleClickConversation(conversation.threadID) }}
+								key={conversation.id}
+							>
+								<ConversationItem
+									conversation={conversation}
+									userName={conversation.name}
+									isSelected={
+										conversation.threadID === selectedThreadId
+									}
+								/>
+							</button>
+						))}
+					<div ref={observerTarget} />
+				</div>
+			</InfiniteScroll>
 
 			{/* {!hasMoreConversations && (
 				<div className="rounded-md p-2 m-3 text-center border-2 font-medium">
@@ -116,6 +121,6 @@ export const ConversationList = () => {
 					Loading conversations...
 				</div>
 			)}
-		</>
+		</aside>
 	);
 };
