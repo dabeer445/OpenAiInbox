@@ -47,8 +47,6 @@ export const ConversationList = () => {
 		loadConvs(from, to).then(data => {
 			const count = data.count || 0
 			setDataLength(count)
-
-			console.log(data.data.length + conversationList.length)
 			if (data.data.length + conversationList.length >= count) {
 				setHadMoreConvs(false)
 			}
@@ -77,9 +75,12 @@ export const ConversationList = () => {
 					Load More
 				</div>
 			} */}
-			<InfiniteScroll dataLength={dataLength} next={() => { setLoadMoreFlag(!loadMoreFlag) }} loader={<h4>Loading</h4>} hasMore={hadMoreConvs} scrollableTarget='conversationListContainer' >
+			<InfiniteScroll dataLength={dataLength} next={() => {
+				console.log("I ran");
+				setLoadMoreFlag(!loadMoreFlag);
+			}} loader={<h4>Loading</h4>} hasMore={hadMoreConvs} scrollableTarget='conversationListContainer' >
 				<div
-					className={`flex flex-col  items-center w-full divide-y-2 bg-white`}
+					className={`flex flex-col items-center w-full divide-y-2 bg-white`}
 				>
 
 					{conversationList

@@ -1,8 +1,8 @@
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { fetchMessagesFromOpenAI, MESSAGES_PAGE_SIZE } from '../utils';
 import { LoadingAnimation } from './interface/Loading';
-import { MessageList } from './MessageList';
 import { useEffect, useRef, useState } from 'react';
+import { MessageItem } from './MessageItem';
 
 export interface OpenAIMessage {
 	threadId: string,
@@ -14,21 +14,12 @@ export interface OpenAIMessage {
 
 interface ConversationDetailsProps {
 	threadId: string;
-	// onDeleteConversation: (conversationId: string) => void;
-	// messagesInfo?: {
-	// 	list: OpenAIMessage[];
-	// 	nextToken?: string;
-	// };
 	className?: string;
-	// isLoading?: boolean
 }
 
 export const ConversationDetails = ({
 	threadId,
-	// onDeleteConversation,
-	// messagesInfo,
 	className,
-	// isLoading
 }: ConversationDetailsProps) => {
 	const [messages, setMessages] = useState<OpenAIMessage[]>([]);
 
@@ -50,9 +41,8 @@ export const ConversationDetails = ({
 			fetchMessagesFromOpenAI(threadId, "").then(messages => {
 				setIsLoadingMessages(false)
 				if (messages.length) {
-					console.log(messages.length)
+
 					const x = messages.map(message => ({ threadId, id: message.id, createdAt: message.created_at, role: message.role, content: message.content[0]?.text?.value }))
-					console.log(messages[0]?.id)
 					setLastMessageId(messages[0]?.id || "")
 					setMessages([...x])
 					if (messages.length < MESSAGES_PAGE_SIZE) {
@@ -67,14 +57,15 @@ export const ConversationDetails = ({
 
 	useEffect(() => {
 		if (threadId.length && lastMessageId.length) {
-			console.log(initialRender)
 			// setIsLoadingMessages(true)
 			fetchMessagesFromOpenAI(threadId, lastMessageId).then(messages => {
-				console.log(lastMessageId)
 				if (messages.length) {
 					const x = messages.map(message => ({ threadId, id: message.id, createdAt: message.created_at, role: message.role, content: message.content[0]?.text?.value }))
 					setLastMessageId(messages[0]?.id || "")
 					setMessages(prev => [...prev, ...x])
+					if (messages.length <= MESSAGES_PAGE_SIZE) {
+						setHadMoreConvs(false)
+					}
 				} else {
 					setHadMoreConvs(false)
 				}
@@ -104,54 +95,37 @@ export const ConversationDetails = ({
 					</div>
 				) : (
 					<div className="flex flex-col h-full p-4">
-						{/* <div onClick={() => { setGetOlderMessagesFlag(!getOlderMessagesFlag) }}>Load More</div> */}
-						<div id='scrollableDiv' ref={containerRef} className="overflow-auto h-full">
+						{
+							messages.length ?
+								<div id='scrollableDiv' ref={containerRef} className="overflow-auto h-full flex flex-col-reverse">
+									<InfiniteScroll dataLength={99999}
+										next={() => {
+											setGetOlderMessagesFlag(!getOlderMessagesFlag)
+										}}
+										loader={<h4 className=''>Loading</h4>}
+										hasMore={hadMoreConvs}
+										scrollableTarget='scrollableDiv'
+										inverse={true}
+										style={{ display: "flex", flexDirection: "column-reverse", overflow: "visible" }}
+									>
+										{messages.map((message, index, list) => (
+											<MessageItem
+												message={message}
+												key={index}
+											/>
+										))}
 
-							<InfiniteScroll dataLength={99999}
-								next={() => {
-									console.log("first")
-									setGetOlderMessagesFlag(!getOlderMessagesFlag)
-								}}
-								loader={<h4 className=''>Loading</h4>}
-								hasMore={hadMoreConvs}
-								scrollableTarget='scrollableDiv'>
-								<MessageList
-									messages={messages}
-								/>
-							</InfiniteScroll>
-
-						</div>
-						{/* <MessageInput
-							conversationId={conversation.id}
-							addMessageToList={(message: Message) => {
-								setMessages((prevMessages) => [
-									...prevMessages,
-									message,
-								]);
-							}}
-							botpressBotIdAsAUser={botpressBotIdAsAUser}
-							handleScrollToBottom={handleScrollToBottom}
-						/> */}
+									</InfiniteScroll>
+									<div className="rounded-md p-2 m-3 font-medium text-center opacity-20">
+										Start of the conversation
+									</div>
+								</div> : <div className="self-center bg-zinc-200 p-5 text-lg font-medium rounded-md my-auto">
+									There are no messages...
+								</div>
+						}
 					</div>
 				)}
 			</div>
-
-			{/* <div className="w-1/3 default-border overflow-y-auto bg-white">
-				{isLoadingUsers ? (
-					<div className="self-center bg-zinc-200 p-6 text-lg font-medium rounded-md my-auto flex flex-col items-center gap-5">
-						<LoadingAnimation label="Loading messages..." />
-						Loading users' details...
-					</div>
-				) : (
-					<ConversationInfo
-						conversation={conversation}
-						users={users}
-						onDeleteConversation={handleDeleteConversation}
-						botpressBotIdAsAUser={botpressBotIdAsAUser}
-						className="flex"
-					/>
-				)}
-			</div> */}
 		</div>
 	);
 };

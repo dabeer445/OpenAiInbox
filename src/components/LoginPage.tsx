@@ -2,49 +2,72 @@ import toast from 'react-hot-toast';
 import { Disclaimer } from './interface/Disclaimer';
 import { storeCredentials } from '../services/storage';
 import { useBotpressClient } from '../hooks/botpressClient';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { DashboardContext } from '../utils';
 
 interface LoginPageProps {
 	clearsCredentialsAndClient: () => void;
+}
+
+const USER_CREDS = {
+	username: "tester@gmail.com",
+	password: "tester12345"
 }
 
 export function LoginPage({ clearsCredentialsAndClient }: LoginPageProps) {
 	const [userBotpressToken, setUserBotpressToken] = useState<string>('');
 	const [userBotpressURL, setUserBotpressURL] = useState<string>('');
 
+	const [username, setUsername] = useState('');
+	const [password, setPassword] = useState('');
+
+	const setIsLoggedIn = useContext(DashboardContext)?.setIsLoggedIn
+
 	const { createClient } = useBotpressClient();
 
 	function handleSubmitCredentials(token: string, url: string) {
-		if (!token || !url) {
+		if (!username.length || !password.length) {
 			toast.error('Please inform all the credentials');
 			return;
 		}
+		// if (!token || !url) {
+		// 	toast.error('Please inform all the credentials');
+		// 	return;
+		// }
 
 		try {
-			const splittedURL = url.split('/');
-			const workspaceId = splittedURL[4];
-			const botId = splittedURL[6];
+			// const splittedURL = url.split('/');
+			// const workspaceId = splittedURL[4];
+			// const botId = splittedURL[6];
 
-			if (!workspaceId || !botId) {
-				throw new Error();
+			// if (!workspaceId || !botId) {
+			// 	throw new Error();
+			// }
+
+			// const bpClient = createClient(token, workspaceId, botId);
+
+			// if (!bpClient) {
+			// 	throw new Error();
+			// }
+
+			// // saves the encrypted credentials to storage
+			// storeCredentials({ token, workspaceId, botId });			
+
+			if (username === USER_CREDS.username && password === USER_CREDS.password) {
+				setIsLoggedIn?.(true)
+			} else {
+				throw 'Incorrect Credentials'
 			}
-
-			const bpClient = createClient(token, workspaceId, botId);
-
-			if (!bpClient) {
-				throw new Error();
-			}
-
-			// saves the encrypted credentials to storage
-			storeCredentials({ token, workspaceId, botId });
 		} catch (error) {
 			toast.error('You have informed invalid credentials');
 
-			clearsCredentialsAndClient();
+			// clearsCredentialsAndClient();
 		}
 
-		setUserBotpressToken('');
-		setUserBotpressURL('');
+		setUsername('');
+		setPassword('');
+		// setUserBotpressToken('');
+		// setUserBotpressURL('');
 	}
 
 	return (
@@ -55,14 +78,15 @@ export function LoginPage({ clearsCredentialsAndClient }: LoginPageProps) {
 
 					<label htmlFor="" className="flex flex-col gap-1">
 						<span className="text-lg font-medium">
-							Clerk Email
+							Email
 						</span>
 						<input
 							type="text"
 							className="px-3 py-2 rounded-md border-2 bg-white"
-							value={userBotpressURL}
+							value={username}
 							onChange={(event) => {
-								setUserBotpressURL(event.target.value);
+								setUsername(event.target.value)
+								// setUserBotpressURL(event.target.value);
 							}}
 						/>
 						{/* <span className="text-sm italic text-gray-600">
@@ -78,9 +102,10 @@ export function LoginPage({ clearsCredentialsAndClient }: LoginPageProps) {
 						<input
 							type="password"
 							className="px-3 py-2 rounded-md border-2 bg-white"
-							value={userBotpressToken}
+							value={password}
 							onChange={(event) => {
-								setUserBotpressToken(event.target.value);
+								setPassword(event.target.value)
+								// setUserBotpressToken(event.target.value);
 							}}
 						/>
 						{/* <span className="text-sm italic text-gray-600">

@@ -101,9 +101,10 @@ export function isBooleanDefined(bool: any): bool is boolean {
 export interface dashboardContextType {
 	selectedThreadId: string;
 	updateThreadId: (threadId: string) => void;
+	setIsLoggedIn: (isLoggedIn: boolean) => void;
 }
 
-export const MESSAGES_PAGE_SIZE = 30
+export const MESSAGES_PAGE_SIZE = 5
 
 export const DashboardContext = createContext<dashboardContextType | undefined>(undefined);
 
@@ -121,7 +122,7 @@ export const loadConvs = async (from: number, to: number) => {
 
 const openai = new OpenAI({ apiKey: import.meta.env.VITE_OPENAI_API, dangerouslyAllowBrowser: true });
 export const fetchMessagesFromOpenAI = async (threadID: string, before: string) => {
-	const threadMessages = await openai.beta.threads.messages.list(threadID, { limit: MESSAGES_PAGE_SIZE, order: "asc", after: before });
+	const threadMessages = await openai.beta.threads.messages.list(threadID, { limit: MESSAGES_PAGE_SIZE, order: "desc", after: before });
 	// console.log(threadMessages)
 	return threadMessages.data;
 };
