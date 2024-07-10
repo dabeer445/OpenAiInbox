@@ -54,7 +54,7 @@ export const Dashboard = () => {
 					{/* <div className="m-2">
 				<Disclaimer />
 			</div> */}
-				</div> : <LoginPage clearsCredentialsAndClient={() => { }} />
+				</div> : <LoginPage />
 			}
 		</DashboardContext.Provider>
 

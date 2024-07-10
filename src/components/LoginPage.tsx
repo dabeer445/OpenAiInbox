@@ -1,31 +1,19 @@
 import toast from 'react-hot-toast';
-import { Disclaimer } from './interface/Disclaimer';
-import { storeCredentials } from '../services/storage';
-import { useBotpressClient } from '../hooks/botpressClient';
 import { useContext, useState } from 'react';
 import { DashboardContext } from '../utils';
-
-interface LoginPageProps {
-	clearsCredentialsAndClient: () => void;
-}
 
 const USER_CREDS = {
 	username: "tester@gmail.com",
 	password: "tester12345"
 }
 
-export function LoginPage({ clearsCredentialsAndClient }: LoginPageProps) {
-	const [userBotpressToken, setUserBotpressToken] = useState<string>('');
-	const [userBotpressURL, setUserBotpressURL] = useState<string>('');
-
+export function LoginPage() {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 
 	const setIsLoggedIn = useContext(DashboardContext)?.setIsLoggedIn
 
-	const { createClient } = useBotpressClient();
-
-	function handleSubmitCredentials(token: string, url: string) {
+	function handleSubmitCredentials() {
 		if (!username.length || !password.length) {
 			toast.error('Please inform all the credentials');
 			return;
@@ -118,10 +106,7 @@ export function LoginPage({ clearsCredentialsAndClient }: LoginPageProps) {
 						className="w-full p-3 rounded-md bg-blue-500 mx-auto"
 						type="button"
 						onClick={() =>
-							handleSubmitCredentials(
-								userBotpressToken,
-								userBotpressURL
-							)
+							handleSubmitCredentials()
 						}
 					>
 						<span className="text-xl text-white font-medium">

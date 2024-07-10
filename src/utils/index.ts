@@ -120,9 +120,9 @@ export const loadConvs = async (from: number, to: number) => {
 	return { data, count };
 };
 
+
 const openai = new OpenAI({ apiKey: import.meta.env.VITE_OPENAI_API, dangerouslyAllowBrowser: true });
-export const fetchMessagesFromOpenAI = async (threadID: string, before: string) => {
+export const fetchMessagesFromOpenAI = async (threadID: string, before: string): Promise<any> => {
 	const threadMessages = await openai.beta.threads.messages.list(threadID, { limit: MESSAGES_PAGE_SIZE, order: "desc", after: before });
-	// console.log(threadMessages)
 	return threadMessages.data;
 };

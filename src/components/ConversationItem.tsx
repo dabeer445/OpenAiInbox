@@ -1,10 +1,9 @@
 import defaultAvatarImg from '../assets/default-avatar.png';
 import differenceInDays from 'date-fns/differenceInDays';
 import { getCountLabel } from '../utils';
-import { ConversationWithMessages } from '../pages/Dashboard';
 
 interface ConversationItemProps {
-	conversation: ConversationWithMessages;
+	conversation: any;
 	userName: string;
 	isSelected?: boolean;
 }

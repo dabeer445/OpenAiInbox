@@ -38,14 +38,13 @@ export const ConversationDetails = ({
 		initialRender.current = false
 		if (threadId.length) {
 			setIsLoadingMessages(true)
-			fetchMessagesFromOpenAI(threadId, "").then(messages => {
+			fetchMessagesFromOpenAI(threadId, "").then(msgList => {
 				setIsLoadingMessages(false)
-				if (messages.length) {
-
-					const x = messages.map(message => ({ threadId, id: message.id, createdAt: message.created_at, role: message.role, content: message.content[0]?.text?.value }))
-					setLastMessageId(messages[0]?.id || "")
+				if (msgList.length) {
+					const x = msgList.map((message: { threadId: any, id: any; created_at: any; role: any; content: { text: { value: any; }; }[]; }) => ({ threadId, id: message.id, createdAt: message.created_at, role: message.role, content: message.content?.[0]?.text?.value }))
+					setLastMessageId(msgList[0]?.id || "")
 					setMessages([...x])
-					if (messages.length < MESSAGES_PAGE_SIZE) {
+					if (msgList.length < MESSAGES_PAGE_SIZE) {
 						setHadMoreConvs(false)
 					}
 				} else {
@@ -60,7 +59,7 @@ export const ConversationDetails = ({
 			// setIsLoadingMessages(true)
 			fetchMessagesFromOpenAI(threadId, lastMessageId).then(messages => {
 				if (messages.length) {
-					const x = messages.map(message => ({ threadId, id: message.id, createdAt: message.created_at, role: message.role, content: message.content[0]?.text?.value }))
+					const x = messages.map((message: { threadId: any, id: any; created_at: any; role: any; content: { text: { value: any; }; }[]; }) => ({ threadId, id: message.id, createdAt: message.created_at, role: message.role, content: message.content[0]?.text?.value }))
 					setLastMessageId(messages[0]?.id || "")
 					setMessages(prev => [...prev, ...x])
 					if (messages.length <= MESSAGES_PAGE_SIZE) {
@@ -72,18 +71,6 @@ export const ConversationDetails = ({
 			})
 		}
 	}, [getOlderMessagesFlag])
-
-
-
-	const handleScroll = () => {
-		// const { scrollTop, clientHeight, scrollHeight } =
-		// 	containerRef.current || { scrollTop: 0, clientHeight: 0, scrollHeight: 0 }
-		// console.log(scrollTop)
-		// if (scrollTop === 40) {
-		// 	console.log("first")
-		// 	setMessages(prev => [...prev, ...prev])
-		// }
-	};
 
 	return (
 		<div className={`flex ${className}`}>
