@@ -1,3 +1,4 @@
+import { UserButton } from '@clerk/clerk-react';
 import robotFaceIcon from '../../assets/robot-face-icon.png';
 
 interface HeaderProps {
@@ -34,12 +35,13 @@ export function Header({ handleLogout, botName, className }: HeaderProps) {
 				</a>
 			</div>
 			<div className="flex flex-row gap-5 items-center">
-				<button
+				{/* <button
 					className="bg-red-500 text-white text-sm font-medium rounded-md px-4 py-2"
 					onClick={() => handleLogout()}
 				>
 					Logout
-				</button>
+				</button> */}
+				<UserButton />
 			</div>
 		</div>
 	);

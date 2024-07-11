@@ -4,12 +4,11 @@ import { Header } from '../components/interface/Header';
 import { useState } from 'react';
 import { DashboardContext } from '../utils';
 import { LoginPage } from '../components/LoginPage';
-import { UserButton } from '@clerk/clerk-react';
 
 export const Dashboard = () => {
 	const [selectedThreadId, setSelectedThreadId] = useState("");
 
-	const [isLoggedIn, setIsLoggedIn] = useState(false)
+	const [isLoggedIn, setIsLoggedIn] = useState(true)
 
 	return <>
 
@@ -29,7 +28,7 @@ export const Dashboard = () => {
 						// botName={botInfo.name}
 						className="flex-shrink-0 h-14"
 					/>
-					<UserButton />
+
 					{/* CONVERSATIONS */}
 					<div className="mx-2 mb-2 gap-2 flex overflow-hidden h-full">
 						<div className="flex flex-col gap-2 w-1/4">

@@ -1,67 +1,24 @@
-import toast from 'react-hot-toast';
-import { useContext, useState } from 'react';
-import { DashboardContext } from '../utils';
 import { SignInButton } from '@clerk/clerk-react';
 
-const USER_CREDS = {
-	username: "tester@gmail.com",
-	password: "tester12345"
-}
-
 export function LoginPage() {
-	const [username, setUsername] = useState('');
-	const [password, setPassword] = useState('');
-
-	const setIsLoggedIn = useContext(DashboardContext)?.setIsLoggedIn
-
-	function handleSubmitCredentials() {
-		if (!username.length || !password.length) {
-			toast.error('Please inform all the credentials');
-			return;
-		}
-		// if (!token || !url) {
-		// 	toast.error('Please inform all the credentials');
-		// 	return;
-		// }
-
-		try {
-			// const splittedURL = url.split('/');
-			// const workspaceId = splittedURL[4];
-			// const botId = splittedURL[6];
-
-			// if (!workspaceId || !botId) {
-			// 	throw new Error();
-			// }
-
-			// const bpClient = createClient(token, workspaceId, botId);
-
-			// if (!bpClient) {
-			// 	throw new Error();
-			// }
-
-			// // saves the encrypted credentials to storage
-			// storeCredentials({ token, workspaceId, botId });			
-
-			if (username === USER_CREDS.username && password === USER_CREDS.password) {
-				setIsLoggedIn?.(true)
-			} else {
-				throw 'Incorrect Credentials'
-			}
-		} catch (error) {
-			toast.error('You have informed invalid credentials');
-
-			// clearsCredentialsAndClient();
-		}
-
-		setUsername('');
-		setPassword('');
-		// setUserBotpressToken('');
-		// setUserBotpressURL('');
-	}
 
 	return (
-		<div className="flex flex-col h-screen">
-			<SignInButton />
-		</div>
+		<>
+			<div className="flex flex-col h-screen items-center justify-center">
+				<div className="flex flex-col items-center justify-center ring-1 ring-neutral-200 bg-white p-5 rounded-xl shadow-lg">
+
+
+					<h1 className='text-2xl tracking-tight font-extrabold'>
+						Let's get in
+					</h1>
+					<p className='my-3 text-neutral-700'>
+						Click the button below, enter the credentials provided to you.
+					</p>
+
+
+					<SignInButton children={<div className='bg-neutral-200 ring-1 ring-neutral-300 rounded-2xl text-xl font-bold px-10 py-2 drop-shadow-2xl cursor-pointer active:scale-95 transition-transform'>Login</div>} />
+				</div>
+			</div>
+		</>
 	);
 }
