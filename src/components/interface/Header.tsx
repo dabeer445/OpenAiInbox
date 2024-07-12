@@ -19,7 +19,7 @@ export function Header({ handleLogout, botName, className }: HeaderProps) {
 						alt="Robot face icon"
 						className="w-6 h-6 mt-[0.3rem]"
 					/>
-					Chatbot Inbox
+					Levelfeed Inbox
 				</h1>
 				<div className="px-3 py-1 text-center font-medium rounded-full border-gray-200 border-2">
 					{botName || 'Unnamed bot'}

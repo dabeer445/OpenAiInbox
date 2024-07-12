@@ -5,26 +5,12 @@ import { LoginPage } from './components/LoginPage';
 
 export default function App() {
 	return (
-		// <BotpressClientContextProvider>
-		// 	<BrowserRouter>
-		// 		<Routes>
-		// 			<Route path="/" element={<Dashboard />} />
-		// 			<Route path="*" element={<div>Num achei</div>} />
-		// 		</Routes>
-		// 		<Toaster />
-		// 	</BrowserRouter>
-		// </BotpressClientContextProvider>
 		<header>
 			<SignedOut>
-				<>
-					<LoginPage />
-					{/* <SignInButton /> */}
-				</>
+				<LoginPage />
 			</SignedOut>
 			<SignedIn>
-
 				<Dashboard />
-				{/* <UserButton /> */}
 			</SignedIn>
 		</header>
 	);

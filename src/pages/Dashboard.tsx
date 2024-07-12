@@ -24,7 +24,7 @@ export const Dashboard = () => {
 					{/* HEADER */}
 					<Header
 						handleLogout={() => { }}
-						botName="Test"
+						botName="Pacha Whatsapp AI"
 						// botName={botInfo.name}
 						className="flex-shrink-0 h-14"
 					/>
