@@ -104,7 +104,7 @@ export interface dashboardContextType {
 	setIsLoggedIn: (isLoggedIn: boolean) => void;
 }
 
-export const MESSAGES_PAGE_SIZE = 5
+export const MESSAGES_PAGE_SIZE = 35
 
 export const DashboardContext = createContext<dashboardContextType | undefined>(undefined);
 
