@@ -1,5 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
-import OpenAI from "openai";
+import axios from "axios";
 import { createContext } from "react";
 
 export function getNumberEmoji(number: number) {
@@ -108,21 +107,33 @@ export const MESSAGES_PAGE_SIZE = 35
 
 export const DashboardContext = createContext<dashboardContextType | undefined>(undefined);
 
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+// const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+// const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
+// const supabase = createClient(supabaseUrl, supabaseKey);
 export const loadConvs = async (from: number, to: number) => {
-	const { data, count, error } = await supabase
-		.from('Conversations')
-		.select('*', { count: 'exact' }).range(from, to).order('created_at', { ascending: false })
-	if (error) throw error;
-	return { data, count };
+	try {
+		const res = await axios.get(`${BACKEND_URL}/getconversations`, { params: { from, to } })
+		return res?.data?.data ?? { data: [], count: 0 }
+	} catch (error) {
+		console.error('Problem fetching conversations.')
+	}
+	// const { data, count, error } = await supabase
+	// 	.from('Conversations')
+	// 	.select('*', { count: 'exact' }).range(from, to).order('created_at', { ascending: false })
+	// if (error) throw error;
+	// return { data, count };
 };
 
 
-const openai = new OpenAI({ apiKey: import.meta.env.VITE_OPENAI_API, dangerouslyAllowBrowser: true });
+// const openai = new OpenAI({ apiKey: import.meta.env.VITE_OPENAI_API, dangerouslyAllowBrowser: true });
 export const fetchMessagesFromOpenAI = async (threadID: string, before: string): Promise<any> => {
-	const threadMessages = await openai.beta.threads.messages.list(threadID, { limit: MESSAGES_PAGE_SIZE, order: "desc", after: before });
-	return threadMessages.data;
+	try {
+		const res = await axios.get(`${BACKEND_URL}/getmessages`, { params: { threadID, before } })
+		return res?.data?.data ?? []
+	} catch (error) {
+		console.error('Problem fetching messages.')
+	}
+	// const threadMessages = await openai.beta.threads.messages.list(threadID, { limit: MESSAGES_PAGE_SIZE, order: "desc", after: before });
+	// return threadMessages.data;
 };
