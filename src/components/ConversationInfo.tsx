@@ -2,13 +2,13 @@ import { Conversation, User } from '@botpress/client';
 import { formatRelative } from 'date-fns';
 import { UserItem } from './UserItem';
 
-interface ConversationInfoProps {
-	conversation: Conversation;
-	users: User[];
-	botpressBotIdAsAUser?: string;
-	onDeleteConversation: (conversationId: string) => void;
-	className?: string;
-}
+// interface ConversationInfoProps {
+// 	conversation: Conversation;
+// 	users: User[];
+// 	botpressBotIdAsAUser?: string;
+// 	onDeleteConversation: (conversationId: string) => void;
+// 	className?: string;
+// }
 
 export interface UserForm {
 	name: string;
@@ -16,19 +16,14 @@ export interface UserForm {
 	about: string | null;
 }
 
-export const ConversationInfo = ({
-	conversation,
-	users,
-	botpressBotIdAsAUser,
-	onDeleteConversation,
-	className,
-}: ConversationInfoProps) => {
+export const ConversationInfo = () => {
 	return (
-		<div className={`flex flex-col gap-8 p-4 ${className}`}>
+		// <div className={`flex flex-col gap-8 p-4 ${className}`}>
+		<div className={`flex flex-[1] flex-col gap-8 p-4 w-full`}>
 			<div>
-				{users.length > 0 ? (
+				{false ? (
 					<div className="flex flex-wrap gap-2">
-						{users
+						{/* {users
 							.sort((a) =>
 								// to have the bot at the bottom always
 								a.id === botpressBotIdAsAUser ? 1 : -1
@@ -43,7 +38,7 @@ export const ConversationInfo = ({
 										key={index}
 									/>
 								);
-							})}
+							})} */}
 					</div>
 				) : (
 					<div className="flex flex-col justify-between text-gray-400 gap-2 rounded-md p-4 w-full border-2">
@@ -54,7 +49,7 @@ export const ConversationInfo = ({
 
 			<hr />
 			<div className="flex flex-col items-center gap-2">
-				{Object.keys(conversation.tags).map((tag) => {
+				{/* {[Object.keys(conversation.tags)].map((tag) => {
 					return (
 						<span
 							className="bg-gray-200 w-full rounded-md px-2 py-1 text-xs"
@@ -64,7 +59,7 @@ export const ConversationInfo = ({
 							<span className="">{conversation.tags[tag]}</span>
 						</span>
 					);
-				})}
+				})} */}
 			</div>
 			<hr />
 
@@ -73,21 +68,21 @@ export const ConversationInfo = ({
 				<p className="flex items-center gap-1">
 					<span>📅</span>
 					<span className="text-gray-400">
-						Started at{' '}
+						{/* Started at{' '}
 						{formatRelative(
 							new Date(),
 							new Date(conversation.createdAt)
-						)}
+						)} */}
 					</span>
 				</p>
 				<p className="flex items-center gap-1">
 					<span>📝</span>
 					<span className="text-gray-400">
 						Updated at{' '}
-						{formatRelative(
+						{/* {formatRelative(
 							new Date(),
 							new Date(conversation.updatedAt)
-						)}
+						)} */}
 					</span>
 				</p>
 			</div>
@@ -95,7 +90,7 @@ export const ConversationInfo = ({
 			<button
 				className="bg-red-500 font-medium text-white rounded-md p-2"
 				type="button"
-				onClick={() => onDeleteConversation(conversation.id)}
+				onClick={() => { }}
 			>
 				Delete conversation
 			</button>

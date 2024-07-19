@@ -137,3 +137,6 @@ export const fetchMessagesFromOpenAI = async (threadID: string, before: string):
 	// const threadMessages = await openai.beta.threads.messages.list(threadID, { limit: MESSAGES_PAGE_SIZE, order: "desc", after: before });
 	// return threadMessages.data;
 };
+
+
+export const FIRST_MESSAGE = 'Bonjour! Je suis Julie de l’équipe Pacha, la litière qui change de couleur ! J’ai vu que vous vous intéressiez à notre litière ! C’est adorable merci ! Comment allez-vous aujourd’hui ? '

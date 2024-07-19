@@ -53,6 +53,7 @@ export const ConversationList = () => {
 			setPage(prev => prev + 1)
 			setConversationList(prev => [...prev, ...data.data])
 		}).catch(e => { }).finally(() => {
+			setHadMoreConvs(false)
 			setIsLoadingConversations(false)
 		})
 	}, [loadMoreFlag])
@@ -76,45 +77,36 @@ export const ConversationList = () => {
 				</div>
 			} */}
 			<InfiniteScroll dataLength={dataLength} next={() => {
-				console.log("I ran");
 				setLoadMoreFlag(!loadMoreFlag);
-			}} loader={<h4>Loading</h4>} hasMore={hadMoreConvs} scrollableTarget='conversationListContainer' >
+			}} loader={<h4></h4>} hasMore={hadMoreConvs} scrollableTarget='conversationListContainer' >
 				<div
 					className={`flex flex-col items-center w-full divide-y-2 bg-white`}
 				>
 
-					{conversationList
-						// if the conversation had the messages data, they could be sorted by the last message
-						.sort((a, b) => {
-							return (
-								new Date(b.created_at).getTime() -
-								new Date(a.created_at).getTime()
-							);
-						})
-						.map((conversation) => (
-							<button
-								className="w-full"
-								onClick={() => { handleClickConversation(conversation.threadID) }}
-								key={conversation.id}
-							>
-								<ConversationItem
-									conversation={conversation}
-									userName={conversation.name}
-									isSelected={
-										conversation.threadID === selectedThreadId
-									}
-								/>
-							</button>
-						))}
+					{conversationList.map((conversation) => (
+						<button
+							className="w-full"
+							onClick={() => { handleClickConversation(conversation.threadID) }}
+							key={conversation.id}
+						>
+							<ConversationItem
+								conversation={conversation}
+								userName={conversation.name}
+								isSelected={
+									conversation.threadID === selectedThreadId
+								}
+							/>
+						</button>
+					))}
 					<div ref={observerTarget} />
 				</div>
 			</InfiniteScroll>
 
-			{/* {!hasMoreConversations && (
+			{!hadMoreConvs && (
 				<div className="rounded-md p-2 m-3 text-center border-2 font-medium">
 					No more conversations
 				</div>
-			)} */}
+			)}
 
 			{isLoadingConversations && (
 				<div className="self-center bg-zinc-200 p-6 text-lg font-medium rounded-md my-auto flex flex-col items-center gap-5">

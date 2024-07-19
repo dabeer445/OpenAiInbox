@@ -1,5 +1,5 @@
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { fetchMessagesFromOpenAI, MESSAGES_PAGE_SIZE } from '../utils';
+import { fetchMessagesFromOpenAI, FIRST_MESSAGE, MESSAGES_PAGE_SIZE } from '../utils';
 import { LoadingAnimation } from './interface/Loading';
 import { useEffect, useRef, useState } from 'react';
 import { MessageItem } from './MessageItem';
@@ -74,7 +74,7 @@ export const ConversationDetails = ({
 
 	return (
 		<div className={`flex ${className}`}>
-			<div className="w-2/3 flex flex-col default-border bg-white">
+			<div className="w-full flex flex-col default-border bg-white">
 				{isLoadingMessages ? (
 					<div className="self-center bg-zinc-200 p-6 text-lg font-medium rounded-md my-auto flex flex-col items-center gap-5">
 						<LoadingAnimation label="Loading messages..." />
@@ -89,19 +89,22 @@ export const ConversationDetails = ({
 										next={() => {
 											setGetOlderMessagesFlag(!getOlderMessagesFlag)
 										}}
-										loader={<h4 className=''>Loading</h4>}
+										loader={<></>}
 										hasMore={hadMoreConvs}
 										scrollableTarget='scrollableDiv'
 										inverse={true}
 										style={{ display: "flex", flexDirection: "column-reverse", overflow: "visible" }}
 									>
-										{messages.map((message, index, list) => (
+										{messages.slice(1, messages.length - 1).map((message, index, list) => (
 											<MessageItem
 												message={message}
 												key={index}
 											/>
 										))}
-
+										<MessageItem
+											message={{ threadId: messages?.[0].threadId, id: 'abc999', createdAt: messages?.[0]?.createdAt ?? new Date().getTime(), role: 'assistant', content: FIRST_MESSAGE }}
+											key={-999}
+										/>
 									</InfiniteScroll>
 									<div className="rounded-md p-2 m-3 font-medium text-center opacity-20">
 										Start of the conversation

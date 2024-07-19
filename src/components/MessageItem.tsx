@@ -3,11 +3,13 @@ import { OpenAIMessage } from './ConversationDetails';
 interface MessageItemProps {
 	message: OpenAIMessage;
 	className?: string;
+	key?: number;
 }
 
-export const MessageItem = ({ message, className }: MessageItemProps) => {
+export const MessageItem = ({ message, className, key }: MessageItemProps) => {
 	return (
 		<div
+			key={key}
 			className={`flex flex-col pb-3 ${message.role === 'assistant'
 				? 'self-start items-start pr-5'
 				: 'self-end items-end pl-5'
@@ -29,7 +31,7 @@ export const MessageItem = ({ message, className }: MessageItemProps) => {
 				config={defaultMessageConfig}
 			/> */}
 			<span className="text-sm text-gray-300">
-				{new Date(message.createdAt * 1000).toLocaleString()}
+				{message.id !== 'abc999' ? new Date(message.createdAt * 1000).toLocaleString() : ''}
 			</span>
 		</div>
 	);
