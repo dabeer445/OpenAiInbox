@@ -8,8 +8,6 @@ import { ConversationInfo } from '../components/ConversationInfo';
 export const Dashboard = () => {
 	const [selectedThreadId, setSelectedThreadId] = useState("");
 
-	const [isLoggedIn, setIsLoggedIn] = useState(true)
-
 	return <>
 
 		<DashboardContext.Provider value={{
@@ -17,7 +15,6 @@ export const Dashboard = () => {
 			updateThreadId(threadId) {
 				setSelectedThreadId(threadId)
 			},
-			setIsLoggedIn
 		}}>
 			{
 				<div className="flex flex-col h-screen overflow-hidden bg-zinc-100 text-gray-800">

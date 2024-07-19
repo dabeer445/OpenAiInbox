@@ -1,6 +1,4 @@
-import { Conversation, User } from '@botpress/client';
-import { formatRelative } from 'date-fns';
-import { UserItem } from './UserItem';
+
 
 // interface ConversationInfoProps {
 // 	conversation: Conversation;

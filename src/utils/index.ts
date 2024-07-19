@@ -100,7 +100,6 @@ export function isBooleanDefined(bool: any): bool is boolean {
 export interface dashboardContextType {
 	selectedThreadId: string;
 	updateThreadId: (threadId: string) => void;
-	setIsLoggedIn: (isLoggedIn: boolean) => void;
 }
 
 export const MESSAGES_PAGE_SIZE = 35
