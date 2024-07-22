@@ -85,13 +85,13 @@ export const ConversationInfo = () => {
 				</p>
 			</div>
 			<hr />
-			<button
+			{/* <button
 				className="bg-red-500 font-medium text-white rounded-md p-2"
 				type="button"
 				onClick={() => { }}
 			>
 				Delete conversation
-			</button>
+			</button> */}
 		</div>
 	);
 };
