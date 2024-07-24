@@ -3,6 +3,7 @@ import { LoadingAnimation } from './interface/Loading';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { DashboardContext, loadConvs } from '../utils';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { useAuth } from '@clerk/clerk-react';
 
 
 export interface ConversationType {
@@ -15,6 +16,9 @@ export interface ConversationType {
 
 
 export const ConversationList = () => {
+
+	const { getToken } = useAuth();
+
 	const [page, setPage] = useState<number>(0);
 
 	const [conversationList, setConversationList] = useState<ConversationType[]>([])
@@ -43,18 +47,23 @@ export const ConversationList = () => {
 
 	useEffect(() => {
 		setIsLoadingConversations(true)
+
 		const { from, to } = getToAndFrom();
-		loadConvs(from, to).then(data => {
-			const count = data.count || 0
-			setDataLength(count)
-			if (data.data.length + conversationList.length >= count) {
+		getToken().then((token) => {
+			loadConvs(from, to, token).then(data => {
+				const count = data.count || 0
+				setDataLength(count)
+				if (data.data.length + conversationList.length >= count) {
+					setHadMoreConvs(false)
+				}
+				setPage(prev => prev + 1)
+				setConversationList(prev => [...prev, ...data.data])
+			}).catch(e => { }).finally(() => {
 				setHadMoreConvs(false)
-			}
-			setPage(prev => prev + 1)
-			setConversationList(prev => [...prev, ...data.data])
-		}).catch(e => { }).finally(() => {
-			setHadMoreConvs(false)
-			setIsLoadingConversations(false)
+				setIsLoadingConversations(false)
+			})
+		}).catch(e => {
+			console.error('Couldn\'t get the token.')
 		})
 	}, [loadMoreFlag])
 

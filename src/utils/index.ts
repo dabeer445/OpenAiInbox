@@ -110,9 +110,9 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 // const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 // const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 // const supabase = createClient(supabaseUrl, supabaseKey);
-export const loadConvs = async (from: number, to: number) => {
+export const loadConvs = async (from: number, to: number, token: string | null) => {
 	try {
-		const res = await axios.get(`${BACKEND_URL}/getconversations`, { params: { from, to } })
+		const res = await axios.get(`${BACKEND_URL}/getconversations`, { params: { from, to }, headers: { Authorization: `Bearer ${token}` } })
 		return res?.data?.data ?? { data: [], count: 0 }
 	} catch (error) {
 		console.error('Problem fetching conversations.')
@@ -126,9 +126,9 @@ export const loadConvs = async (from: number, to: number) => {
 
 
 // const openai = new OpenAI({ apiKey: import.meta.env.VITE_OPENAI_API, dangerouslyAllowBrowser: true });
-export const fetchMessagesFromOpenAI = async (threadID: string, before: string): Promise<any> => {
+export const fetchMessagesFromOpenAI = async (threadID: string, before: string, token: string | null): Promise<any> => {
 	try {
-		const res = await axios.get(`${BACKEND_URL}/getmessages`, { params: { threadID, before } })
+		const res = await axios.get(`${BACKEND_URL}/getmessages`, { params: { threadID, before }, headers: { Authorization: `Bearer ${token}` } })
 		return res?.data?.data ?? []
 	} catch (error) {
 		console.error('Problem fetching messages.')
