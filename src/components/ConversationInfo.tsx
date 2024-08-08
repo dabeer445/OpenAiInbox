@@ -62,36 +62,36 @@ export const ConversationInfo = () => {
 			<hr />
 
 			{/* Conversation creation date */}
-			<div className="flex flex-col gap-2">
+			{/* <div className="flex flex-col gap-2">
 				<p className="flex items-center gap-1">
 					<span>📅</span>
 					<span className="text-gray-400">
-						{/* Started at{' '}
+						Started at{' '}
 						{formatRelative(
 							new Date(),
 							new Date(conversation.createdAt)
-						)} */}
+						)}
 					</span>
 				</p>
 				<p className="flex items-center gap-1">
 					<span>📝</span>
 					<span className="text-gray-400">
 						Updated at{' '}
-						{/* {formatRelative(
+						{formatRelative(
 							new Date(),
 							new Date(conversation.updatedAt)
-						)} */}
+						)}
 					</span>
 				</p>
 			</div>
 			<hr />
-			{/* <button
+			<button
 				className="bg-red-500 font-medium text-white rounded-md p-2"
 				type="button"
 				onClick={() => { }}
 			>
 				Delete conversation
-			</button> */}
-		</div>
+			</button>*/}
+		</div> 
 	);
 };

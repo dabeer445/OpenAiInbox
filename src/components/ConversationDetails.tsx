@@ -34,6 +34,20 @@ export const ConversationDetails = ({
 
 	const initialRender = useRef(true)
 
+	const updateLinks = (inputString: string) => {
+		// Regex to find markdown links containing 'https://monpacha.fr'
+		const regex = /\[([^\]]+)\]\((https:\/\/monpacha\.fr[^\s]*)\)/g;
+		// Replace the markdown links and append the UTM parameters
+		const updatedString = inputString.replace(regex, (match, text, url) => {
+			// Check if the link already has query parameters
+			const hasQueryParams = url.includes('?');
+			const separator = hasQueryParams ? '&' : '?';
+			// Convert markdown link to normal link and append UTM parameters
+			return `${url}${separator}utm_source=whatsapp&utm_campaign=your-whatsapp-campaign`;
+		});
+		return updatedString;
+	};
+
 	useEffect(() => {
 		initialRender.current = false
 		if (threadId.length) {
@@ -41,7 +55,7 @@ export const ConversationDetails = ({
 			fetchMessagesFromOpenAI(threadId, "").then(msgList => {
 				setIsLoadingMessages(false)
 				if (msgList.length) {
-					const x = msgList.map((message: { threadId: any, id: any; created_at: any; role: any; content: { text: { value: any; }; }[]; }) => ({ threadId, id: message.id, createdAt: message.created_at, role: message.role, content: message.content?.[0]?.text?.value }))
+					const x = msgList.map((message: { threadId: any, id: any; created_at: any; role: any; content: { text: { value: any; }; }[]; }) => ({ threadId, id: message.id, createdAt: message.created_at, role: message.role, content: updateLinks(message.content?.[0]?.text?.value) }))
 					setLastMessageId(msgList[0]?.id || "")
 					setMessages([...x])
 					if (msgList.length < MESSAGES_PAGE_SIZE) {

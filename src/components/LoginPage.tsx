@@ -14,7 +14,7 @@ export function LoginPage() {
 					Click the button below, enter the credentials provided to you.
 				</p>
 
-				<SignInButton children={<div className='bg-neutral-200 ring-1 ring-neutral-300 rounded-2xl text-xl font-bold px-10 py-2 drop-shadow-2xl cursor-pointer active:scale-95 transition-transform'>Login</div>} />
+				<SignInButton mode="modal" children={<div className='bg-neutral-200 ring-1 ring-neutral-300 rounded-2xl text-xl font-bold px-10 py-2 drop-shadow-2xl cursor-pointer active:scale-95 transition-transform'>Login</div>} />
 			</div>
 		</div>
 	);
