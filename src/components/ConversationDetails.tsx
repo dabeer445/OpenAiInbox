@@ -1,5 +1,5 @@
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { fetchMessagesFromOpenAI, FIRST_MESSAGE, MESSAGES_PAGE_SIZE } from '../utils';
+import { fetchMessagesFromOpenAI, MESSAGES_PAGE_SIZE } from '../utils';
 import { LoadingAnimation } from './interface/Loading';
 import { useEffect, useRef, useState } from 'react';
 import MessageItem from './MessageItem';

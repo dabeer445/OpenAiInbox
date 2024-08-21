@@ -1,5 +1,5 @@
 import { isDefinedAndHasItems } from '../utils';
-import { MessageItem } from './MessageItem';
+import MessageItem from './MessageItem';
 import { useEffect, useRef } from 'react';
 import { OpenAIMessage } from './ConversationDetails';
 
