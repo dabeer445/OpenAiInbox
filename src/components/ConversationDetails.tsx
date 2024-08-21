@@ -2,14 +2,14 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { fetchMessagesFromOpenAI, FIRST_MESSAGE, MESSAGES_PAGE_SIZE } from '../utils';
 import { LoadingAnimation } from './interface/Loading';
 import { useEffect, useRef, useState } from 'react';
-import { MessageItem } from './MessageItem';
+import MessageItem from './MessageItem';
 
 export interface OpenAIMessage {
-	threadId: string,
+	type: string,
 	id: string,
 	role: string,
 	content: string,
-	createdAt: number
+	created_at: number
 }
 
 interface ConversationDetailsProps {
@@ -34,28 +34,17 @@ export const ConversationDetails = ({
 
 	const initialRender = useRef(true)
 
-	const updateLinks = (inputString: string) => {
-		// Regex to find markdown links containing 'https://monpacha.fr'
-		const regex = /\[([^\]]+)\]\((https:\/\/monpacha\.fr[^\s]*)\)/g;
-		// Replace the markdown links and append the UTM parameters
-		const updatedString = inputString.replace(regex, (match, text, url) => {
-			// Check if the link already has query parameters
-			const hasQueryParams = url.includes('?');
-			const separator = hasQueryParams ? '&' : '?';
-			// Convert markdown link to normal link and append UTM parameters
-			return `${url}${separator}utm_source=whatsapp&utm_campaign=your-whatsapp-campaign`;
-		});
-		return updatedString;
-	};
-
 	useEffect(() => {
 		initialRender.current = false
 		if (threadId.length) {
 			setIsLoadingMessages(true)
 			fetchMessagesFromOpenAI(threadId, "").then(msgList => {
+
 				setIsLoadingMessages(false)
 				if (msgList.length) {
-					const x = msgList.map((message: { threadId: any, id: any; created_at: any; role: any; content: { text: { value: any; }; }[]; }) => ({ threadId, id: message.id, createdAt: message.created_at, role: message.role, content: updateLinks(message.content?.[0]?.text?.value) }))
+					const x = msgList.map((message: OpenAIMessage) => (
+						{ ...message, content: message.content }
+					));
 					setLastMessageId(msgList[0]?.id || "")
 					setMessages([...x])
 					if (msgList.length < MESSAGES_PAGE_SIZE) {
@@ -73,7 +62,9 @@ export const ConversationDetails = ({
 			// setIsLoadingMessages(true)
 			fetchMessagesFromOpenAI(threadId, lastMessageId).then(messages => {
 				if (messages.length) {
-					const x = messages.map((message: { threadId: any, id: any; created_at: any; role: any; content: { text: { value: any; }; }[]; }) => ({ threadId, id: message.id, createdAt: message.created_at, role: message.role, content: message.content[0]?.text?.value }))
+					const x = messages.map((message: OpenAIMessage) => (
+						{ ...message, content: message.content }
+					));
 					setLastMessageId(messages[0]?.id || "")
 					setMessages(prev => [...prev, ...x])
 					if (messages.length <= MESSAGES_PAGE_SIZE) {
@@ -86,6 +77,7 @@ export const ConversationDetails = ({
 		}
 	}, [getOlderMessagesFlag])
 
+console.log('ms',messages[0])
 	return (
 		<div className={`flex ${className}`}>
 			<div className="w-full flex flex-col default-border bg-white">
@@ -98,7 +90,10 @@ export const ConversationDetails = ({
 					<div className="flex flex-col h-full p-4">
 						{
 							messages.length ?
-								<div id='scrollableDiv' ref={containerRef} className="overflow-auto h-full flex flex-col-reverse">
+								<div id='scrollableDiv' ref={containerRef} className="overflow-auto h-full flex flex-col">
+									<div className="rounded-md p-2 m-3 font-medium text-center opacity-20">
+										Start of the conversation
+									</div>
 									<InfiniteScroll dataLength={99999}
 										next={() => {
 											setGetOlderMessagesFlag(!getOlderMessagesFlag)
@@ -106,23 +101,20 @@ export const ConversationDetails = ({
 										loader={<></>}
 										hasMore={hadMoreConvs}
 										scrollableTarget='scrollableDiv'
-										inverse={true}
-										style={{ display: "flex", flexDirection: "column-reverse", overflow: "visible" }}
+										// inverse={true}
+										style={{ display: "flex", flexDirection: "column", overflow: "visible" }}
 									>
-										{messages.slice(1, messages.length - 1).map((message, index, list) => (
+										{/* <MessageItem
+											message={{ type: 'text', id: 'abc999', created_at: messages[0].created_at * 1000, role: 'assistant', content: FIRST_MESSAGE }}
+											key={-999}
+										/> */}
+										{messages.map((message, index, list) => (
 											<MessageItem
 												message={message}
 												key={index}
 											/>
 										))}
-										<MessageItem
-											message={{ threadId: messages?.[0].threadId, id: 'abc999', createdAt: messages?.[0]?.createdAt ?? new Date().getTime(), role: 'assistant', content: FIRST_MESSAGE }}
-											key={-999}
-										/>
 									</InfiniteScroll>
-									<div className="rounded-md p-2 m-3 font-medium text-center opacity-20">
-										Start of the conversation
-									</div>
 								</div> : <div className="self-center bg-zinc-200 p-5 text-lg font-medium rounded-md my-auto">
 									There are no messages...
 								</div>

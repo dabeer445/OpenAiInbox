@@ -107,6 +107,8 @@ export const MESSAGES_PAGE_SIZE = 35
 export const DashboardContext = createContext<dashboardContextType | undefined>(undefined);
 
 const BACKEND_URL = "https://pascha-levelfeed.replit.app";
+// const BACKEND_URL = "https://bad4019f-3737-4229-991e-ba928ba1eb98-00-1ifpkioax0eoz.sisko.replit.dev";
+
 // const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 // const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 // const supabase = createClient(supabaseUrl, supabaseKey);
