@@ -4,7 +4,7 @@ import { Header } from '../components/interface/Header';
 import { useEffect, useState } from 'react';
 import { DashboardContext } from '../utils';
 import { ConversationInfo } from '../components/ConversationInfo';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
 export const Dashboard = () => {
 	const [selectedThreadId, setSelectedThreadId] = useState("");

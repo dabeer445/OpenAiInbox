@@ -3,7 +3,7 @@ import { fetchMessagesFromOpenAI, MESSAGES_PAGE_SIZE } from '../utils';
 import { LoadingAnimation } from './interface/Loading';
 import { useEffect, useRef, useState } from 'react';
 import MessageItem from './MessageItem';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export interface OpenAIMessage {
 	type: string,
