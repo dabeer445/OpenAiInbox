@@ -38,6 +38,9 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({
 						true
 					)}
 				</span>
+				<span className="text-sm text-gray-400">
+					{new Date(conversation.created_at).toLocaleDateString()}
+				</span>
 			</p>
 			{/* Badge with channel name */}
 			<span

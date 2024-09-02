@@ -3,6 +3,7 @@ import { fetchMessagesFromOpenAI, MESSAGES_PAGE_SIZE } from '../utils';
 import { LoadingAnimation } from './interface/Loading';
 import { useEffect, useRef, useState } from 'react';
 import MessageItem from './MessageItem';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export interface OpenAIMessage {
 	type: string,
@@ -21,6 +22,8 @@ export const ConversationDetails = ({
 	threadId,
 	className,
 }: ConversationDetailsProps) => {
+	const navigate = useNavigate();
+
 	const [messages, setMessages] = useState<OpenAIMessage[]>([]);
 
 	const [isLoadingMessages, setIsLoadingMessages] = useState(false)
@@ -37,6 +40,7 @@ export const ConversationDetails = ({
 	useEffect(() => {
 		initialRender.current = false
 		if (threadId.length) {
+			navigate(`?thread_id=${threadId}`, { replace: true });
 			setIsLoadingMessages(true)
 			fetchMessagesFromOpenAI(threadId, "").then(msgList => {
 
@@ -77,7 +81,7 @@ export const ConversationDetails = ({
 		}
 	}, [getOlderMessagesFlag])
 
-console.log('ms',messages[0])
+
 	return (
 		<div className={`flex ${className}`}>
 			<div className="w-full flex flex-col default-border bg-white">

@@ -1,12 +1,21 @@
 import { ConversationDetails } from '../components/ConversationDetails';
 import { ConversationList } from '../components/ConversationList';
 import { Header } from '../components/interface/Header';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DashboardContext } from '../utils';
 import { ConversationInfo } from '../components/ConversationInfo';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export const Dashboard = () => {
 	const [selectedThreadId, setSelectedThreadId] = useState("");
+	const [searchParams] = useSearchParams();
+	const paramThreadId = searchParams.get('thread_id');
+
+	useEffect(() => {
+		if(!paramThreadId) return;
+		setSelectedThreadId(paramThreadId);
+	}, [paramThreadId]);
+
 
 	return <>
 
